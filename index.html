@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="es" id="htmlRoot">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snacks Saludables</title>
+  <style>
+    :root {
+      --bg-primary: #fff9f9;
+      --bg-secondary: #fff3e0;
+      --text-primary: #5d4037;
+      --text-secondary: #3e2723;
+      --accent: #e67e22;
+      --accent-hover: #d35400;
+      --success: #4CAF50;
+      --danger: #f44336;
+      --border: #ffe0b2;
+      --shadow: rgba(0,0,0,0.1);
+      --card-bg: #fff;
+      --header-bg: #fff;
+      --btn-primary: #e67e22;
+      --btn-primary-hover: #d35400;
+      --btn-secondary: #607d8b;
+      --btn-secondary-hover: #455a64;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #121212;
+      --bg-secondary: #1e1e1e;
+      --text-primary: #e0e0e0;
+      --text-secondary: #ffffff;
+      --accent: #ff9800;
+      --accent-hover: #ffb74d;
+      --success: #66bb6a;
+      --danger: #ef5350;
+      --border: #37474f;
+      --shadow: rgba(0,0,0,0.4);
+      --card-bg: #262626;
+      --header-bg: #1a1a1a;
+      --btn-primary: #ff9800;
+      --btn-primary-hover: #ffb74d;
+      --btn-secondary: #78909c;
+      --btn-secondary-hover: #90a4ae;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+      position: relative;
+      padding-left: 0;
+    }
+
+    header {
+      background: var(--header-bg);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px var(--shadow);
+      position: relative;
+    }
+
+    h1 {
+      color: var(--accent);
+      text-align: center;
+      margin: 0;
+      font-size: 2.2em;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--btn-secondary);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .producto {
+      border: 2px solid var(--border);
+      padding: 20px;
+      margin: 15px 5px;
+      border-radius: 15px;
+      display: inline-block;
+      width: 240px;
+      text-align: center;
+      background: var(--card-bg);
+      vertical-align: top;
+      box-shadow: 0 4px 8px var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .producto:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .producto img {
+      max-width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border);
+    }
+
+    .producto h4 {
+      margin: 10px 0;
+      color: var(--text-secondary);
+    }
+
+    .precio {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: var(--accent);
+      margin: 10px 0;
+    }
+
+    .stock {
+      font-size: 0.9em;
+      color: var(--text-primary);
+      margin-bottom: 15px;
+    }
+
+    .cantidad-control {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .btn-cantidad {
+      width: 40px;
+      height: 40px;
+      background: var(--btn-secondary);
+      color: white;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      border-radius: 50%;
+      margin: 0 5px;
+      transition: background 0.2s;
+    }
+
+    .btn-cantidad:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .cantidad-display {
+      font-size: 1.2em;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .btn-agregar {
+      background: var(--btn-primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: background 0.3s;
+      width: 100%;
+    }
+
+    .btn-agregar:hover {
+      background: var(--btn-primary-hover);
+    }
+
+    #panelAdmin {
+      background: var(--bg-secondary);
+      padding: 30px;
+      border-radius: 20px;
+      margin: 30px 0;
+      display: none;
+      border: 2px dashed var(--accent);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    #panelAdmin input, #panelAdmin button {
+      display: block;
+      margin: 15px 0;
+      padding: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
+
+    #btnAdminLogin {
+      padding: 15px 30px;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 30px auto;
+      display: block;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: background 0.3s;
+    }
+
+    #btnAdminLogin:hover {
+      background: #d32f2f;
+    }
+
+    #catalogo {
+      margin-top: 30px;
+      text-align: center;
+      min-height: 200px;
+    }
+
+    #carrito-container {
+      background: var(--bg-secondary);
+      padding: 25px;
+      border-radius: 20px;
+      margin: 30px 0;
+      min-height: 80px;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .carrito-item {
+      background: var(--card-bg);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+
+    .carrito-total {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: var(--accent);
+      margin: 20px 0;
+      text-align: right;
+    }
+
+    .btn-action {
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 5px;
+      transition: background 0.3s;
+    }
+
+    #btnVaciarCarrito {
+      background: var(--danger);
+      color: white;
+    }
+
+    #btnVaciarCarrito:hover {
+      background: #d32f2f;
+    }
+
+    #btnFinalizarCompra {
+      background: var(--success);
+      color: white;
+    }
+
+    #btnFinalizarCompra:hover {
+      background: #388e3c;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: translateX(150%);
+      transition: transform 0.3s ease-out;
+      z-index: 1000;
+      font-weight: bold;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .ticket {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border: 2px dashed var(--accent);
+      text-align: center;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .countdown {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: var(--danger);
+      margin: 15px 0;
+    }
+
+    /* Sidebar Menu */
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--btn-primary);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5em;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px var(--shadow);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      padding: 20px;
+      box-shadow: 2px 0 10px var(--shadow);
+      transition: left 0.3s ease;
+      z-index: 99;
+      overflow-y: auto;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar h2 {
+      margin: 0;
+      color: var(--text-secondary);
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    .ticket-item {
+      background: var(--card-bg);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 10px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .ticket-item.vigente {
+      border-left-color: var(--success);
+    }
+
+    .ticket-item.expirado, .ticket-item.cancelado {
+      border-left-color: var(--danger);
+    }
+
+    .ticket-item.retirado {
+      border-left-color: #607d8b;
+    }
+
+    .ticket-estado {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .estado-vigente {
+      background: var(--success);
+      color: white;
+    }
+
+    .estado-expirado, .estado-cancelado {
+      background: var(--danger);
+      color: white;
+    }
+
+    .estado-retirado {
+      background: #607d8b;
+      color: white;
+    }
+
+    .ticket-countdown {
+      font-weight: bold;
+      color: var(--danger);
+      margin: 10px 0;
+    }
+
+    /* Modal */
+    #loginModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #loginModal > div {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 5px 20px var(--shadow);
+    }
+
+    #loginModal input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .producto {
+        width: 100%;
+        margin: 15px 0;
+      }
+    }
+
+    .pulse-animation {
+      animation: pulse 0.6s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón para abrir el menú lateral -->
+  <button class="menu-toggle" id="menuToggle">☰</button>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Menú</h2>
+      <button class="close-sidebar" id="closeSidebar">✕</button>
+    </div>
+    <div id="mis-tickets">
+      <h3>🎫 Mis Tickets</h3>
+      <div id="lista-tickets">
+        <p>Cargando tus tickets...</p>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <h1>Snacks Saludables</h1>
+    <p style="text-align: center; font-size: 1.1em; color: var(--text-primary);">Deliciosos, naturales y hechos con amor para tu bienestar diario.</p>
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+  </header>
+
+  <!-- Botón de Acceso Admin -->
+  <button id="btnAdminLogin">🔐 Acceso Administrador</button>
+
+  <!-- Panel de Administración (oculto hasta login) -->
+  <div id="panelAdmin">
+    <h3>➕ Agregar Nuevo Producto</h3>
+    <input type="text" id="nombreProducto" placeholder="Nombre del producto" required>
+    <input type="number" id="precioProducto" placeholder="Precio" step="0.01" required>
+    <input type="number" id="cantidadProducto" placeholder="Cantidad en stock" required>
+    <input type="text" id="imagenProducto" placeholder="URL de la imagen (https://...jpg)" required>
+    <button id="btnSubirProducto">📤 Subir Producto</button>
+
+    <hr style="margin: 30px 0; border-color: var(--border);">
+
+    <h3>✏️ Gestionar Productos</h3>
+    <div id="listaProductosAdmin">
+      <p>Cargando lista de productos...</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 30px 0;">
+    <h2 style="color: var(--success); margin: 0;">🛒 Tu Pedido</h2>
+    <div id="userStatus" style="font-size: 1.1em; font-weight: bold;">
+      <!-- Aquí se mostrará el estado del usuario -->
+    </div>
+  </div>
+
+  <div id="carrito-container">
+    <div id="carrito">
+      <p>Tu carrito está vacío.</p>
+    </div>
+    <div id="ticket" style="display: none;">
+      <div class="ticket">
+        <h3>🎟️ Ticket de Reserva</h3>
+        <p>Tienes 48 horas para completar tu pago.</p>
+        <div class="countdown" id="countdownTimer">48:00:00</div>
+        <p id="ticketExpiry">Expira: <span id="expiryDate"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="text-align: center; color: var(--accent);">⭐ Catálogo Completo</h2>
+  <div id="catalogo">
+    <p>Cargando productos...</p>
+  </div>
+
+  <div class="toast" id="toast">Producto agregado al carrito!</div>
+
+  <!-- Modal de Login/Registro -->
+  <div id="loginModal">
+    <div>
+      <h3 style="text-align: center; color: var(--text-secondary);">🔐 Iniciar Sesión / Registrarse</h3>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Contraseña">
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button id="btnLogin" style="flex: 1; padding: 12px; background: var(--btn-primary); color: white; border: none; border-radius: 25px; cursor: pointer;">Iniciar Sesión</button>
+        <button id="btnRegister" style="flex: 1; padding: 12px; background: var(--success); color: white; border: none; border-radius: 25px; cursor: pointer;">Registrarse</button>
+      </div>
+      <button id="btnGoogleLogin" style="width: 100%; margin: 15px 0; padding: 12px; background: #4285F4; color: white; border: none; border-radius: 25px; cursor: pointer;">Continuar con Google</button>
+      <button id="btnForgotPassword" style="width: 100%; margin: 15px 0; padding: 12px; background: none; color: var(--accent); border: none; cursor: pointer; text-decoration: underline;">¿Olvidaste tu contraseña?</button>
+      <button id="btnCloseModal" style="width: 100%; margin-top: 15px; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 25px; cursor: pointer;">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Configuración de Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBd8A9XcCOETQBgxlil18KV4Ngo3uZLvsA",
+      authDomain: "snacks-saludables-admin.firebaseapp.com",
+      projectId: "snacks-saludables-admin",
+      storageBucket: "snacks-saludables-admin.appspot.com",
+      messagingSenderId: "120803404380",
+      appId: "1:120803404380:web:89b7099a008aabecd25499",
+      measurementId: "G-T5L3JCQPFT"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- Script Principal -->
+  <script>
+    // Carrito: array que almacena los productos seleccionados
+    let carrito = [];
+    let ticketTimer = null;
+    let ticketActual = null;
+
+    // Cargar carrito desde localStorage al iniciar
+    function cargarCarritoDesdeLocalStorage() {
+      const carritoGuardado = localStorage.getItem('carrito');
+      const ticketGuardado = localStorage.getItem('ticketActual');
+      
+      if (carritoGuardado) {
+        carrito = JSON.parse(carritoGuardado);
+        actualizarVistaCarrito();
+      }
+      
+      if (ticketGuardado) {
+        ticketActual = JSON.parse(ticketGuardado);
+        if (ticketActual.expiryTime > Date.now()) {
+          iniciarContadorRegresivo();
+        } else {
+          // Si expiró, actualizar estado en Firestore
+          if (ticketActual.id) {
+            marcarTicketComoExpirado(ticketActual.id);
+          }
+          ticketActual = null;
+          localStorage.removeItem('ticketActual');
+        }
+      }
+    }
+
+    // Guardar carrito en localStorage
+    function guardarCarritoEnLocalStorage() {
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+    }
+
+    // Guardar ticket actual en localStorage
+    function guardarTicketActualEnLocalStorage() {
+      if (ticketActual) {
+        localStorage.setItem('ticketActual', JSON.stringify(ticketActual));
+      } else {
+        localStorage.removeItem('ticketActual');
+      }
+    }
+
+    // Iniciar contador regresivo para el ticket
+    function iniciarContadorRegresivo() {
+      if (ticketTimer) clearInterval(ticketTimer);
+      
+      const countdownElement = document.getElementById('countdownTimer');
+      const expiryDateElement = document.getElementById('expiryDate');
+      
+      if (!ticketActual) {
+        document.getElementById('ticket').style.display = 'none';
+        return;
+      }
+
+      // Mostrar fecha de expiración
+      const expiryDate = new Date(ticketActual.expiryTime);
+      expiryDateElement.textContent = expiryDate.toLocaleString();
+
+      // Mostrar ticket
+      document.getElementById('ticket').style.display = 'block';
+
+      // Actualizar contador cada segundo
+      ticketTimer = setInterval(() => {
+        const ahora = Date.now();
+        const diferencia = ticketActual.expiryTime - ahora;
+        
+        if (diferencia <= 0) {
+          clearInterval(ticketTimer);
+          countdownElement.textContent = "¡Expirado!";
+          marcarTicketComoExpirado(ticketActual.id);
+          ticketActual = null;
+          guardarTicketActualEnLocalStorage();
+          document.getElementById('ticket').style.display = 'none';
+          actualizarVistaTickets();
+          showToast("Tu ticket ha expirado.");
+          return;
+        }
+
+        // Calcular horas, minutos y segundos
+        const horas = Math.floor(diferencia / (1000 * 60 * 60));
+        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+        
+        countdownElement.textContent = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // Marcar ticket como expirado en Firestore
+    async function marcarTicketComoExpirado(ticketId) {
+      if (!ticketId) return;
+      try {
+        await firebase.firestore().collection('tickets').doc(ticketId).update({
+          estado: 'expirado',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (error) {
+        console.error("Error al actualizar ticket expirado:", error);
+      }
+    }
+
+    // Mostrar toast (notificación moderna)
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Mostrar panel de admin tras login exitoso
+    function mostrarPanelAdmin() {
+      document.getElementById('panelAdmin').style.display = 'block';
+      document.getElementById('btnAdminLogin').style.display = 'none';
+      showToast("¡Bienvenido, Administrador!");
+      cargarProductosAdmin(); // Cargar lista de productos para gestionar
+    }
+
+    // Login de Admin
+    document.getElementById('btnAdminLogin').addEventListener('click', function() {
+      const email = prompt("Ingresa tu email de administrador:");
+      const password = prompt("Ingresa tu contraseña:");
+
+      if (!email || !password) {
+        alert("Debes ingresar email y contraseña.");
+        return;
+      }
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          mostrarPanelAdmin();
+        })
+        .catch((error) => {
+          alert("Acceso denegado: " + error.message);
+        });
+    });
+
+    // Subir Producto (SIN Storage - usando URL directa)
+    document.getElementById('btnSubirProducto').addEventListener('click', async function() {
+      const nombre = document.getElementById('nombreProducto').value.trim();
+      const precio = document.getElementById('precioProducto').value;
+      const cantidad = document.getElementById('cantidadProducto').value;
+      const urlImagen = document.getElementById('imagenProducto').value.trim();
+
+      if (!nombre || !precio || !cantidad || !urlImagen) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      // Validar que la URL parezca una imagen
+      if (!urlImagen.startsWith('http') || !(/\.(jpeg|jpg|gif|png|webp)$/i.test(urlImagen))) {
+        alert("Por favor, ingresa una URL válida que termine en .jpg, .png, .gif, etc.");
+        return;
+      }
+
+      try {
+        // Guardar directamente en Firestore
+        const producto = {
+          nombre: nombre,
+          precio: parseFloat(precio),
+          cantidad: parseInt(cantidad),
+          imagenUrl: urlImagen,
+          fechaCreado: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        await firebase.firestore().collection('productos').add(producto);
+
+        showToast("¡Producto agregado con éxito!");
+        // Resetear formulario
+        document.getElementById('nombreProducto').value = '';
+        document.getElementById('precioProducto').value = '';
+        document.getElementById('cantidadProducto').value = '';
+        document.getElementById('imagenProducto').value = '';
+
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Hubo un error al guardar el producto: " + error.message);
+      }
+    });
+
+    // Función para actualizar la vista del carrito
+    function actualizarVistaCarrito() {
+      const carritoDiv = document.getElementById('carrito');
+      
+      if (carrito.length === 0) {
+        carritoDiv.innerHTML = '<p>Tu carrito está vacío.</p>';
+        document.getElementById('ticket').style.display = 'none';
+        return;
+      }
+
+      let html = '<h3 style="margin-top: 0; color: var(--text-secondary);">🛒 Resumen de tu Pedido</h3>';
+      let total = 0;
+
+      carrito.forEach((item, index) => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+        html += `
+          <div class="carrito-item">
+            <div>
+              <strong>${item.nombre}</strong> x ${item.cantidad} = $${subtotal.toFixed(2)}
+            </div>
+            <button class="btnEliminarDelCarrito" data-index="${index}" style="background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-size: 14px;">🗑️</button>
+          </div>
+        `;
+      });
+
+      html += `<div class="carrito-total">Total: $${total.toFixed(2)}</div>`;
+      html += `<button id="btnVaciarCarrito" class="btn-action">Vaciar Carrito</button>`;
+      html += `<button id="btnFinalizarCompra" class="btn-action">✅ Finalizar Compra</button>`;
+
+      carritoDiv.innerHTML = html;
+
+      // Asignar eventos a botones de eliminar
+      document.querySelectorAll('.btnEliminarDelCarrito').forEach(boton => {
+        boton.addEventListener('click', function() {
+          const index = parseInt(this.getAttribute('data-index'));
+          carrito.splice(index, 1); // Eliminar del array
+          guardarCarritoEnLocalStorage(); // Guardar en localStorage
+          actualizarVistaCarrito(); // Actualizar vista
+          showToast("Producto eliminado del carrito");
+        });
+      });
+
+      // Evento para vaciar carrito
+      document.getElementById('btnVaciarCarrito')?.addEventListener('click', function() {
+        carrito = [];
+        ticketActual = null;
+        guardarCarritoEnLocalStorage();
+        guardarTicketActualEnLocalStorage();
+        actualizarVistaCarrito();
+        showToast("Carrito vaciado");
+      });
+
+      // Evento para finalizar compra
+      document.getElementById('btnFinalizarCompra')?.addEventListener('click', async function() {
+        if (carrito.length === 0) {
+          showToast("Tu carrito está vacío");
+          return;
+        }
+
+        // Verificar si el usuario está autenticado
+        const user = firebase.auth().currentUser;
+        if (!user) {
+          const accion = confirm("Debes iniciar sesión para finalizar la compra. ¿Quieres hacerlo ahora?");
+          if (accion) {
+            mostrarModalLogin();
+          }
+          return;
+        }
+
+        // Actualizar stock en Firestore
+        try {
+          for (const item of carrito) {
+            const productoRef = firebase.firestore().collection('productos').doc(item.id);
+            const productoDoc = await productoRef.get();
+            const productoData = productoDoc.data();
+            
+            // Verificar que haya suficiente stock
+            if (productoData.cantidad < item.cantidad) {
+              alert(`No hay suficiente stock de ${item.nombre}. Por favor, actualiza tu carrito.`);
+              return;
+            }
+            
+            // Actualizar stock
+            await productoRef.update({
+              cantidad: productoData.cantidad - item.cantidad
+            });
+          }
+          
+          // Crear ticket con expiración en 48 horas
+          const ticketId = 'TICKET-' + Date.now();
+          ticketActual = {
+            id: ticketId,
+            fecha: new Date().toLocaleString(),
+            productos: [...carrito],
+            total: carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
+            expiryTime: Date.now() + (48 * 60 * 60 * 1000), // 48 horas
+            estado: 'vigente',
+            userId: user.uid,
+            userEmail: user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          
+          // Guardar ticket en Firestore
+          await firebase.firestore().collection('tickets').doc(ticketId).set(ticketActual);
+          
+          // Guardar en localStorage
+          guardarTicketActualEnLocalStorage();
+          iniciarContadorRegresivo();
+          
+          // Limpiar carrito
+          carrito = [];
+          guardarCarritoEnLocalStorage();
+          actualizarVistaCarrito();
+          
+          showToast("¡Compra finalizada! Ticket generado con 48 horas para pago.");
+          actualizarVistaTickets();
+          
+        } catch (error) {
+          console.error("Error al finalizar compra:", error);
+          alert("Error al procesar la compra: " + error.message);
+        }
+      });
+    }
+
+    // Asignar evento de "Agregar al Carrito" a los productos
+    function asignarEventosCarrito() {
+      document.querySelectorAll('.producto').forEach(productoDiv => {
+        const id = productoDiv.getAttribute('data-id');
+        const nombre = productoDiv.getAttribute('data-nombre');
+        const precio = parseFloat(productoDiv.getAttribute('data-precio'));
+        const stock = parseInt(productoDiv.getAttribute('data-stock'));
+        
+        // Inicializar cantidad en 1
+        let cantidad = 1;
+        const cantidadDisplay = productoDiv.querySelector('.cantidad-display');
+        if (cantidadDisplay) {
+          cantidadDisplay.textContent = cantidad;
+        }
+
+        // Evento para botón de disminuir
+        productoDiv.querySelector('.btn-disminuir')?.addEventListener('click', function() {
+          if (cantidad > 1) {
+            cantidad--;
+            cantidadDisplay.textContent = cantidad;
+          }
+        });
+
+        // Evento para botón de aumentar
+        productoDiv.querySelector('.btn-aumentar')?.addEventListener('click', function() {
+          if (cantidad < stock) {
+            cantidad++;
+            cantidadDisplay.textContent = cantidad;
+          } else {
+            showToast("No hay más stock disponible");
+          }
+        });
+
+        // Evento para botón de agregar
+        productoDiv.querySelector('.btn-agregar')?.addEventListener('click', function() {
+          if (stock <= 0) {
+            showToast("Producto agotado");
+            return;
+          }
+
+          if (cantidad <= 0) {
+            showToast("Cantidad no válida");
+            return;
+          }
+
+          // Verificar si el producto ya está en el carrito
+          const itemExistente = carrito.find(item => item.id === id);
+          if (itemExistente) {
+            if (itemExistente.cantidad + cantidad > stock) {
+              showToast(`Solo puedes agregar hasta ${stock} unidades en total`);
+              return;
+            }
+            itemExistente.cantidad += cantidad;
+          } else {
+            carrito.push({ id, nombre, precio, cantidad });
+          }
+
+          guardarCarritoEnLocalStorage();
+          actualizarVistaCarrito();
+          
+          // Animación
+          productoDiv.classList.add('pulse-animation');
+          setTimeout(() => {
+            productoDiv.classList.remove('pulse-animation');
+          }, 600);
+          
+          showToast(`${cantidad} ${nombre}(s) agregado(s) al carrito`);
+          
+          // Resetear cantidad a 1 para la próxima vez
+          cantidad = 1;
+          if (cantidadDisplay) {
+            cantidadDisplay.textContent = cantidad;
+          }
+        });
+      });
+    }
+
+    // Cargar Catálogo Público (lo que ven los clientes)
+    function cargarProductos() {
+      const catalogoDiv = document.getElementById('catalogo');
+
+      firebase.firestore().collection('productos')
+        .orderBy('fechaCreado', 'desc')
+        .onSnapshot((snapshot) => {
+          catalogoDiv.innerHTML = '';
+
+          if (snapshot.empty) {
+            catalogoDiv.innerHTML = '<p>No hay productos disponibles aún.</p>';
+            return;
+          }
+
+          snapshot.forEach((doc) => {
+            const p = doc.data();
+            const productoHTML = `
+              <div class="producto" data-id="${doc.id}" data-nombre="${p.nombre}" data-precio="${p.precio}" data-stock="${p.cantidad}">
+                <img src="${p.imagenUrl}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/150?text=Sin+Imagen'">
+                <h4>${p.nombre}</h4>
+                <div class="precio">$${p.precio.toFixed(2)}</div>
+                <div class="stock">Stock: ${p.cantidad}</div>
+                <div class="cantidad-control">
+                  <button class="btn-cantidad btn-disminuir">-</button>
+                  <span class="cantidad-display">1</span>
+                  <button class="btn-cantidad btn-aumentar">+</button>
+                </div>
+                <button class="btn-agregar">🛒 Agregar al Carrito</button>
+              </div>
+            `;
+            catalogoDiv.innerHTML += productoHTML;
+          });
+
+          // Asignar eventos de carrito después de cargar productos
+          asignarEventosCarrito();
+
+        }, (error) => {
+          console.error("Error al cargar productos:", error);
+          catalogoDiv.innerHTML = '<p>Error al cargar el catálogo. Por favor, recarga la página.</p>';
+          asignarEventosCarrito();
+        });
+    }
+
+    // Cargar Productos en Panel Admin (con opciones de editar/eliminar)
+    function cargarProductosAdmin() {
+      const listaDiv = document.getElementById('listaProductosAdmin');
+
+      firebase.firestore().collection('productos')
+        .orderBy('fechaCreado', 'desc')
+        .onSnapshot((snapshot) => {
+          listaDiv.innerHTML = '';
+
+          if (snapshot.empty) {
+            listaDiv.innerHTML = '<p>No hay productos para gestionar.</p>';
+            return;
+          }
+
+          snapshot.forEach((doc) => {
+            const p = doc.data();
+            const productoId = doc.id;
+            const itemHTML = `
+              <div style="border: 2px solid var(--border); padding: 20px; margin: 20px 0; border-radius: 15px; background: var(--card-bg);">
+                <img src="${p.imagenUrl}" alt="${p.nombre}" width="100" onerror="this.src='https://via.placeholder.com/100?text=X'" style="border-radius: 10px; margin-bottom: 10px;">
+                <div><strong>${p.nombre}</strong></div>
+                <div>Precio: $${p.precio} | Stock: ${p.cantidad}</div>
+                <div style="margin-top: 15px;">
+                  <button class="btnEditar" data-id="${productoId}" style="background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin-right: 10px; font-weight: bold;">✏️ Editar</button>
+                  <button class="btnEliminar" data-id="${productoId}" style="background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">🗑️ Eliminar</button>
+                </div>
+              </div>
+            `;
+            listaDiv.innerHTML += itemHTML;
+          });
+
+          // Asignar eventos a los botones después de renderizar
+          asignarEventosBotonesAdmin();
+        }, (error) => {
+          console.error("Error al cargar productos admin:", error);
+          listaDiv.innerHTML = '<p>Error al cargar la lista. Por favor, recarga.</p>';
+        });
+    }
+
+    // Asignar eventos de edición y eliminación
+    function asignarEventosBotonesAdmin() {
+      // Evento para Editar
+      document.querySelectorAll('.btnEditar').forEach(boton => {
+        boton.addEventListener('click', async function() {
+          const productoId = this.getAttribute('data-id');
+          
+          // Obtener datos actuales del producto
+          const doc = await firebase.firestore().collection('productos').doc(productoId).get();
+          const p = doc.data();
+
+          // Pedir nuevos valores
+          const nuevoNombre = prompt("Nuevo nombre:", p.nombre) || p.nombre;
+          const nuevoPrecio = prompt("Nuevo precio:", p.precio) || p.precio;
+          const nuevaCantidad = prompt("Nueva cantidad:", p.cantidad) || p.cantidad;
+          const nuevaImagen = prompt("Nueva URL de imagen:", p.imagenUrl) || p.imagenUrl;
+
+          // Validar imagen
+          if (!nuevaImagen.startsWith('http') || !(/\.(jpeg|jpg|gif|png|webp)$/i.test(nuevaImagen))) {
+            alert("URL de imagen no válida. No se guardaron los cambios.");
+            return;
+          }
+
+          try {
+            await firebase.firestore().collection('productos').doc(productoId).update({
+              nombre: nuevoNombre,
+              precio: parseFloat(nuevoPrecio),
+              cantidad: parseInt(nuevaCantidad),
+              imagenUrl: nuevaImagen
+            });
+            showToast("Producto actualizado con éxito");
+          } catch (error) {
+            console.error("Error al actualizar:", error);
+            alert("Error al actualizar el producto: " + error.message);
+          }
+        });
+      });
+
+      // Evento para Eliminar
+      document.querySelectorAll('.btnEliminar').forEach(boton => {
+        boton.addEventListener('click', async function() {
+          const productoId = this.getAttribute('data-id');
+          const confirmar = confirm("¿Estás seguro de que deseas eliminar este producto?");
+
+          if (!confirmar) return;
+
+          try {
+            await firebase.firestore().collection('productos').doc(productoId).delete();
+            showToast("Producto eliminado con éxito");
+          } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("Error al eliminar el producto: " + error.message);
+          }
+        });
+      });
+    }
+
+    // Modo oscuro
+    function toggleTheme() {
+      const html = document.getElementById('htmlRoot');
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      // Cambiar icono del botón
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    // Aplicar tema guardado
+    function aplicarTemaGuardado() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      const html = document.getElementById('htmlRoot');
+      html.setAttribute('data-theme', savedTheme);
+      
+      // Cambiar icono del botón
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    // Mostrar modal de login
+    function mostrarModalLogin() {
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+
+    // Ocultar modal de login
+    function ocultarModalLogin() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    // Verificar estado de autenticación
+    function verificarAutenticacion() {
+      firebase.auth().onAuthStateChanged((user) => {
+        const userStatusDiv = document.getElementById('userStatus');
+        if (user) {
+          userStatusDiv.innerHTML = `Hola, ${user.email} <button id="btnLogout" style="margin-left: 10px; padding: 5px 10px; background: var(--danger); color: white; border: none; border-radius: 15px; cursor: pointer; font-size: 0.9em;">Cerrar Sesión</button>`;
+          document.getElementById('btnLogout')?.addEventListener('click', cerrarSesion);
+          cargarTicketsUsuario(user.uid); // Cargar tickets del usuario
+        } else {
+          userStatusDiv.innerHTML = `<button id="btnLoginCliente" style="padding: 8px 15px; background: var(--btn-primary); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9em;">🔐 Iniciar Sesión</button>`;
+          document.getElementById('btnLoginCliente')?.addEventListener('click', mostrarModalLogin);
+        }
+      });
+    }
+
+    // Cerrar sesión
+    function cerrarSesion() {
+      firebase.auth().signOut().then(() => {
+        showToast("Sesión cerrada");
+        ticketActual = null;
+        guardarTicketActualEnLocalStorage();
+        document.getElementById('ticket').style.display = 'none';
+        if (ticketTimer) clearInterval(ticketTimer);
+        actualizarVistaCarrito();
+        verificarAutenticacion();
+      }).catch((error) => {
+        alert("Error al cerrar sesión: " + error.message);
+      });
+    }
+
+    // Cargar tickets del usuario desde Firestore
+    function cargarTicketsUsuario(userId) {
+      if (!userId) return;
+      
+      firebase.firestore().collection('tickets')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .onSnapshot((snapshot) => {
+          let tickets = [];
+          snapshot.forEach(doc => {
+            tickets.push(doc.data());
+          });
+          
+          // También incluir ticket actual si existe
+          if (ticketActual && ticketActual.userId === userId) {
+            tickets.unshift(ticketActual);
+          }
+          
+          mostrarTicketsEnVista(tickets);
+        }, (error) => {
+          console.error("Error al cargar tickets:", error);
+        });
+    }
+
+    // Mostrar tickets en la vista
+    function mostrarTicketsEnVista(tickets) {
+      const listaTicketsDiv = document.getElementById('lista-tickets');
+      
+      let html = '';
+      
+      if (tickets.length === 0) {
+        html = '<p>No tienes tickets aún.</p>';
+      } else {
+        tickets.forEach(ticket => {
+          const estadoClass = ticket.estado === 'vigente' ? 'vigente' : 
+                             ticket.estado === 'retirado' ? 'retirado' : 
+                             'expirado';
+          const estadoText = ticket.estado === 'vigente' ? 'VIGENTE' : 
+                            ticket.estado === 'retirado' ? 'RETIRADO' : 
+                            ticket.estado === 'cancelado' ? 'CANCELADO' : 'EXPIRADO';
+          const estadoColorClass = ticket.estado === 'vigente' ? 'estado-vigente' : 
+                                  ticket.estado === 'retirado' ? 'estado-retirado' : 
+                                  'estado-expirado';
+          
+          let countdownHtml = '';
+          if (ticket.estado === 'vigente' && ticket.expiryTime) {
+            countdownHtml = `<div class="ticket-countdown">Tiempo restante: <span class="countdown-${ticket.id}">Calculando...</span></div>`;
+            iniciarContadorTicket(ticket.id, ticket.expiryTime);
+          }
+          
+          let accionesHtml = '';
+          if (ticket.estado === 'vigente' && ticket.id) {
+            accionesHtml = `
+              <button class="btn-accion-ticket" data-accion="retirar" data-id="${ticket.id}" style="margin: 10px 5px; padding: 8px 15px; background: #607d8b; color: white; border: none; border-radius: 20px; cursor: pointer;">✅ Retirar</button>
+              <button class="btn-accion-ticket" data-accion="cancelar" data-id="${ticket.id}" style="margin: 10px 5px; padding: 8px 15px; background: var(--danger); color: white; border: none; border-radius: 20px; cursor: pointer;">❌ Cancelar</button>
+            `;
+          }
+          
+          html += `
+            <div class="ticket-item ${estadoClass}">
+              <div class="ticket-estado ${estadoColorClass}">${estadoText}</div>
+              <div><strong>ID:</strong> ${ticket.id}</div>
+              <div><strong>Fecha:</strong> ${ticket.fecha}</div>
+              <div><strong>Total:</strong> $${ticket.total.toFixed(2)}</div>
+              ${countdownHtml}
+              <div>
+                <strong>Productos:</strong>
+                <ul>
+                  ${ticket.productos.map(p => `<li>${p.nombre} x${p.cantidad}</li>`).join('')}
+                </ul>
+              </div>
+              ${accionesHtml}
+            </div>
+          `;
+        });
+      }
+      
+      listaTicketsDiv.innerHTML = html;
+      
+      // Asignar eventos a botones de acción
+      document.querySelectorAll('.btn-accion-ticket').forEach(boton => {
+        boton.addEventListener('click', async function() {
+          const accion = this.getAttribute('data-accion');
+          const ticketId = this.getAttribute('data-id');
+          
+          if (accion === 'retirar') {
+            try {
+              await firebase.firestore().collection('tickets').doc(ticketId).update({
+                estado: 'retirado',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              showToast("¡Ticket retirado con éxito!");
+              if (ticketActual && ticketActual.id === ticketId) {
+                ticketActual = null;
+                guardarTicketActualEnLocalStorage();
+                document.getElementById('ticket').style.display = 'none';
+                if (ticketTimer) clearInterval(ticketTimer);
+              }
+            } catch (error) {
+              alert("Error al actualizar ticket: " + error.message);
+            }
+          } else if (accion === 'cancelar') {
+            try {
+              await firebase.firestore().collection('tickets').doc(ticketId).update({
+                estado: 'cancelado',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              showToast("Ticket cancelado.");
+              if (ticketActual && ticketActual.id === ticketId) {
+                ticketActual = null;
+                guardarTicketActualEnLocalStorage();
+                document.getElementById('ticket').style.display = 'none';
+                if (ticketTimer) clearInterval(ticketTimer);
+              }
+            } catch (error) {
+              alert("Error al actualizar ticket: " + error.message);
+            }
+          }
+          
+          const user = firebase.auth().currentUser;
+          if (user) {
+            cargarTicketsUsuario(user.uid);
+          }
+          actualizarVistaCarrito();
+        });
+      });
+    }
+
+    // Iniciar contador para un ticket específico
+    function iniciarContadorTicket(ticketId, expiryTime) {
+      const countdownElement = document.querySelector(`.countdown-${ticketId}`);
+      if (!countdownElement) return;
+      
+      const interval = setInterval(() => {
+        const ahora = Date.now();
+        const diferencia = expiryTime - ahora;
+        
+        if (diferencia <= 0) {
+          clearInterval(interval);
+          if (countdownElement) {
+            countdownElement.textContent = "¡Expirado!";
+          }
+          return;
+        }
+        
+        const horas = Math.floor(diferencia / (1000 * 60 * 60));
+        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+        
+        if (countdownElement) {
+          countdownElement.textContent = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    // Inicializar eventos del modal
+    function inicializarEventosLogin() {
+      // Login con email/contraseña
+      document.getElementById('btnLogin')?.addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) {
+          alert("Completa todos los campos");
+          return;
+        }
+        try {
+          await firebase.auth().signInWithEmailAndPassword(email, password);
+          showToast("¡Bienvenido de nuevo!");
+          ocultarModalLogin();
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      });
+
+      // Registro
+      document.getElementById('btnRegister')?.addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) {
+          alert("Completa todos los campos");
+          return;
+        }
+        try {
+          await firebase.auth().createUserWithEmailAndPassword(email, password);
+          showToast("¡Cuenta creada con éxito! Bienvenido.");
+          ocultarModalLogin();
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      });
+
+      // Login con Google
+      document.getElementById('btnGoogleLogin')?.addEventListener('click', async () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          await firebase.auth().signInWithPopup(provider);
+          showToast("¡Bienvenido con Google!");
+          ocultarModalLogin();
+        } catch (error) {
+          alert("Error al iniciar sesión con Google: " + error.message);
+        }
+      });
+
+      // Recuperar contraseña
+      document.getElementById('btnForgotPassword')?.addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value;
+        if (!email) {
+          alert("Por favor, ingresa tu email primero.");
+          return;
+        }
+        try {
+          await firebase.auth().sendPasswordResetEmail(email);
+          alert("Se ha enviado un email con instrucciones para restablecer tu contraseña.");
+        } catch (error) {
+          alert("Error: " + error.message);
+        }
+      });
+
+      // Cerrar modal
+      document.getElementById('btnCloseModal')?.addEventListener('click', ocultarModalLogin);
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Aplicar tema guardado
+      aplicarTemaGuardado();
+      
+      // Cargar carrito desde localStorage
+      cargarCarritoDesdeLocalStorage();
+      
+      // Cargar productos
+      cargarProductos();
+      
+      // Evento para cambiar tema
+      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+      
+      // Evento para abrir/cerrar sidebar
+      document.getElementById('menuToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.add('open');
+      });
+      
+      document.getElementById('closeSidebar').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.remove('open');
+      });
+
+      // Inicializar sistema de autenticación
+      verificarAutenticacion();
+      inicializarEventosLogin();
+    });
+  </script>
+
+</body>
+</html>
